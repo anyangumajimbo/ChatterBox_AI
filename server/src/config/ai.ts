@@ -1,15 +1,11 @@
-import OpenAI from 'openai';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-const AI_MODEL = process.env.OPENAI_MODEL || 'gpt-4-turbo-preview';
-
-// System prompt for emotionally intelligent chatbot
 export const CHARM_GPT_SYSTEM_PROMPT = `You are CHARM_GPT, a charming, emotionally aware chatbot who listens attentively, replies with warmth and subtle wit, and engages people as if they are special and understood.
 
 Your personality traits:
@@ -41,68 +37,47 @@ export const generateAIResponse = async (
     }
 ): Promise<string> => {
     try {
-        // Build context-aware system prompt
         let systemPrompt = CHARM_GPT_SYSTEM_PROMPT;
-
         if (userContext) {
-            systemPrompt += `\n\nUser Context:
-- Name: ${userContext.name || 'Friend'}
-- Country: ${userContext.country || 'Unknown'}
-- Interests: ${userContext.interests?.join(', ') || 'Not specified'}
-- Personality: ${userContext.personalityTags?.join(', ') || 'Not specified'}
-
-Use this context to personalize your responses and make the conversation more meaningful.`;
+            systemPrompt += `\n\nUser Context:\n- Name: ${userContext.name || 'Friend'}\n- Country: ${userContext.country || 'Unknown'}\n- Interests: ${userContext.interests?.join(', ') || 'Not specified'}\n- Personality: ${userContext.personalityTags?.join(', ') || 'Not specified'}\n\nUse this context to personalize your responses and make the conversation more meaningful.`;
         }
 
-        const messages = [
-            { role: 'system' as const, content: systemPrompt },
-            ...conversationHistory.slice(-10), // Keep last 10 messages for context
-            { role: 'user' as const, content: userMessage }
-        ];
+        // Gemini expects a single prompt string, so concatenate the system prompt, history, and user message
+        const historyText = conversationHistory
+            .slice(-10)
+            .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
+            .join('\n');
+        const prompt = `${systemPrompt}\n\n${historyText}\nUser: ${userMessage}\nAssistant:`;
 
-        const completion = await openai.chat.completions.create({
-            model: AI_MODEL,
-            messages,
-            max_tokens: 300,
-            temperature: 0.8,
-            presence_penalty: 0.1,
-            frequency_penalty: 0.1,
-        });
+        const response = await axios.post(
+            GEMINI_API_URL,
+            {
+                contents: [
+                    {
+                        parts: [
+                            { text: prompt }
+                        ]
+                    }
+                ]
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-goog-api-key': GEMINI_API_KEY
+                }
+            }
+        );
 
-        return completion.choices[0]?.message?.content || 'I apologize, but I seem to be having trouble responding right now. Could you try again?';
+        const aiResponse = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        return aiResponse || 'I apologize, but I seem to be having trouble responding right now. Could you try again?';
     } catch (error) {
-        console.error('OpenAI API error:', error);
+        console.error('Gemini API error:', (error as any)?.response?.data || error);
         return 'I apologize, but I\'m experiencing some technical difficulties. Please try again in a moment.';
     }
 };
 
+// Optionally, you can update or remove analyzeEmotionalTone if not supported by Gemini
 export const analyzeEmotionalTone = async (message: string): Promise<'happy' | 'sad' | 'excited' | 'calm' | 'neutral'> => {
-    try {
-        const completion = await openai.chat.completions.create({
-            model: AI_MODEL,
-            messages: [
-                {
-                    role: 'system',
-                    content: 'Analyze the emotional tone of the following message and respond with only one word: happy, sad, excited, calm, or neutral.'
-                },
-                {
-                    role: 'user',
-                    content: message
-                }
-            ],
-            max_tokens: 10,
-            temperature: 0.3,
-        });
-
-        const tone = completion.choices[0]?.message?.content?.toLowerCase().trim();
-
-        if (tone && ['happy', 'sad', 'excited', 'calm', 'neutral'].includes(tone)) {
-            return tone as 'happy' | 'sad' | 'excited' | 'calm' | 'neutral';
-        }
-
-        return 'neutral';
-    } catch (error) {
-        console.error('Emotional tone analysis error:', error);
-        return 'neutral';
-    }
+    // Placeholder: Gemini may not support direct tone analysis like OpenAI
+    return 'neutral';
 }; 
