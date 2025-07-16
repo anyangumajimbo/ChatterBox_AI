@@ -36,3 +36,8 @@ Thumbs.db
 
 # Misc
 *.local
+# Ignore compiled shared files
+shared/*.js
+shared/*.js.map
+shared/*.d.ts
+shared/*.d.ts.map
