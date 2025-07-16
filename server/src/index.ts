@@ -22,7 +22,11 @@ app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: [
+        'http://localhost:3000',
+        'https://chatter-box-ai-beige.vercel.app',
+        'https://chatter-box-6q3faw6hk-anyangu-majimbos-projects.vercel.app'
+    ],
     credentials: true
 }));
 
