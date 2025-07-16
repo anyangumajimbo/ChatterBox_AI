@@ -8,7 +8,7 @@ import {
 import { authenticateToken } from '../middleware/auth';
 import { validateMessage } from '../middleware/validation';
 
-const router = Router();
+const router: Router = Router();
 
 // All chat routes require authentication
 router.use(authenticateToken);

@@ -3,7 +3,7 @@ import { register, login, getProfile, updateProfile } from '../controllers/authC
 import { authenticateToken } from '../middleware/auth';
 import { validateRegistration, validateLogin } from '../middleware/validation';
 
-const router = Router();
+const router: Router = Router();
 
 // Public routes
 router.post('/register', validateRegistration, register);

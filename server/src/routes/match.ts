@@ -8,7 +8,7 @@ import {
 import { authenticateToken } from '../middleware/auth';
 import { validateMatchRequest } from '../middleware/validation';
 
-const router = Router();
+const router: Router = Router();
 
 // All match routes require authentication
 router.use(authenticateToken);
