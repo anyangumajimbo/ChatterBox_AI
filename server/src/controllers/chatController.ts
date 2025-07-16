@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Message } from '../models/Message';
 import { User } from '../models/User';
 import { generateAIResponse, analyzeEmotionalTone } from '../config/ai';
-import { IChatMessage, IAIChatRequest, ApiResponse } from '../../../shared/types';
+import { IChatMessage, IAIChatRequest, ApiResponse } from '../shared/types';
 
 export const sendMessage = async (req: Request, res: Response): Promise<void> => {
     try {

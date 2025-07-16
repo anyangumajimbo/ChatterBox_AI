@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import { IMessage } from '../../../shared/types';
+import { IMessage } from '../shared/types';
 
 export interface IMessageDocument extends Omit<IMessage, '_id'>, Document {
     _id: Types.ObjectId;

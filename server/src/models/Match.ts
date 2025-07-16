@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import { IMatch } from '../../../shared/types';
+import { IMatch } from '../shared/types';
 
 export interface IMatchDocument extends Omit<IMatch, '_id'>, Document {
     _id: Types.ObjectId;

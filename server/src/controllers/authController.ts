@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { User, IUserDocument } from '../models/User';
 import { generateToken } from '../middleware/auth';
-import { IUserRegistration, IUserLogin, AuthResponse, ApiResponse } from '../../../shared/types';
+import { IUserRegistration, IUserLogin, AuthResponse, ApiResponse } from '../shared/types';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {

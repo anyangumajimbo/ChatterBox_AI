@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { Match } from '../models/Match';
-import { IMatchCriteria, IMatchResult, ApiResponse } from '../../../shared/types';
+import { IMatchCriteria, IMatchResult, ApiResponse } from '../shared/types';
 
 // Calculate compatibility score between two users
 const calculateCompatibilityScore = (user1: any, user2: any): number => {

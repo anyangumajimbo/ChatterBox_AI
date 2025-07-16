@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser, UserPreferences } from '../../../shared/types';
+import { IUser, UserPreferences } from '../shared/types';
 
 export interface IUserDocument extends Omit<IUser, '_id'>, Document {
     _id: Types.ObjectId;
